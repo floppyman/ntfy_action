@@ -37727,9 +37727,11 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const axios = __nccwpck_require__(8757);
 const github = __nccwpck_require__(5438);
-//const FormData = require("form-data");
-//const fs = require("fs");
 
+/**
+ * returns an array with action_buttons and message
+ * @returns array
+ */
 async function githubmessage() {
 	const context = github.context;
 	const payload = context.payload;
@@ -37876,8 +37878,8 @@ async function run() {
 
 		let message = await githubmessage();
 
-		if (server_type == "gitea") {
-			message[0] = message[0].splice(0, 1)
+		if (server_type == "gitea") { 
+			message[0].shift();
 		}
 
 		let request = {

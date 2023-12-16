@@ -1,9 +1,11 @@
 const core = require("@actions/core");
 const axios = require("axios");
 const github = require("@actions/github");
-//const FormData = require("form-data");
-//const fs = require("fs");
 
+/**
+ * returns an array with action_buttons and message
+ * @returns array
+ */
 async function githubmessage() {
 	const context = github.context;
 	const payload = context.payload;
@@ -150,8 +152,8 @@ async function run() {
 
 		let message = await githubmessage();
 
-		if (server_type == "gitea") {
-			message[0] = message[0].splice(0, 1)
+		if (server_type == "gitea") { 
+			message[0].shift();
 		}
 
 		let request = {
