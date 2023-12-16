@@ -1,0 +1,39 @@
+{
+  "name": "ntfy-action",
+  "version": "1.0.1",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "prepare": "ncc build src/index.js -o dist --source-map --license licenses.txt",
+    "test": "jest",
+    "all": "npm run lint && npm run prepare && npm run test && npm run beautify",
+    "beautify": "js-beautify src/index.js -r -q && js-beautify dist/index.js -r -q && js-beautify dist/sourcemap-register.js -r -q"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NiNiyas/ntfy-action.git"
+  },
+  "keywords": [
+    "GitHub",
+    "Actions",
+    "JavaScript",
+    "ntfy"
+  ],
+  "author": "NiNiyas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NiNiyas/ntfy-action/issues"
+  },
+  "homepage": "https://github.com/actions/javascript-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "js-beautify": "^1.14.11",
+    "@vercel/ncc": "^0.38.1",
+    "eslint": "^8.56.0",
+    "jest": "^29.7.0"
+  }
+}
