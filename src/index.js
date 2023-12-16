@@ -151,7 +151,7 @@ async function run() {
 		let message = await githubmessage();
 
 		if (server_type == "gitea") {
-			delete message[0][0]
+			message[0] = message[0].splice(0, 1)
 		}
 
 		let request = {
