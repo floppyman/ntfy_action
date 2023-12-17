@@ -37732,21 +37732,20 @@ const github = __nccwpck_require__(5438);
  * returns an array with action_buttons and message
  * @returns array
  */
-async function githubmessage() {
+async function getMessageData(isGithub, isGitea, isDebug) {
 	const context = github.context;
 	const payload = context.payload;
 	let action_buttons
 	let message
 
+	if (isDebug) {
+		console.log(`Context: ${context}`)
+		console.log(`Payload: ${payload}`)
+	}
+
 	switch (context.eventName) {
 		case "push":
 			action_buttons = [
-				{
-					"action": "view",
-					"label": "Compare",
-					"url": payload.compare,
-					"clear": true
-				},
 				{
 					"action": "view",
 					"label": "View Commit",
@@ -37760,10 +37759,19 @@ async function githubmessage() {
 					"clear": true
 				}
 			]
+			if (isGithub) {
+				action_buttons.splice(0, 0, {
+					"action": "view",
+					"label": "Compare",
+					"url": payload.compare,
+					"clear": true
+				});
+			}
 
 			message = `${payload.head_commit.committer.name} has pushed ${context.sha.slice(-7)} to ${payload.repository.full_name}.\n\n` +
 				`Author: ${payload.head_commit.author.username}\n` +
 				`Committer: ${payload.head_commit.committer.name}\n` +
+				//`Committer Email: ${payload.head_commit.committer.email}\n` +
 				`Ref: ${context.ref}\n` +
 				`Pushed by: ${payload.pusher.name}\n` +
 				`Workflow Job Name: ${context.job}\n` +
@@ -37874,13 +37882,12 @@ async function run() {
 			console.log(`Priority: ${priority}`)
 		}
 
+		let isGithub = server_type === "github";
+		let isGitea = server_type === "gitea";
+
 		core.info(`Connecting to endpoint (${url}) ...`)
 
-		let message = await githubmessage();
-
-		if (server_type == "gitea") { 
-			message[0].shift();
-		}
+		let message = await getMessageData(isGithub, isGitea, debug);
 
 		let request = {
 			method: "POST",
