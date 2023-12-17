@@ -37739,8 +37739,8 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 	let message
 
 	if (isDebug) {
-		console.log(`Context: ${context}`)
-		console.log(`Payload: ${payload}`)
+		console.log("Context:", context)
+		console.log("Payload:", payload)
 	}
 
 	switch (context.eventName) {
@@ -37874,7 +37874,7 @@ async function run() {
 
 		if (debug) {
 			console.log(`URL: ${url}`)
-			console.log(`Headers: ${JSON.stringify(headers)}`)
+			console.log("Headers:", headers)
 			console.log(`Tags: ${tags}`)
 			console.log(`Topic: ${topic}`)
 			console.log(`Title: ${title}`)
