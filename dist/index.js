@@ -37741,6 +37741,8 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 	if (isDebug) {
 		console.log("Context:", context)
 		console.log("Payload:", payload)
+		// console.log("Payload Author:", payload.head_commit.author)
+		// console.log("Payload Committer:", payload.head_commit.committer)
 	}
 
 	switch (context.eventName) {
@@ -37748,32 +37750,31 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			action_buttons = [
 				{
 					"action": "view",
-					"label": "View Commit",
+					"label": "Compare",
+					"url": (isGithub ? payload.compare : isGitea ? payload.compare_url : ""),
+					"clear": true
+				},
+				{
+					"action": "view",
+					"label": "Commit",
 					"url": payload.head_commit.url,
 					"clear": true
 				},
 				{
 					"action": "view",
-					"label": "Visit Repository",
+					"label": "Repository",
 					"url": payload.repository.html_url,
 					"clear": true
 				}
 			]
-			if (isGithub) {
-				action_buttons.splice(0, 0, {
-					"action": "view",
-					"label": "Compare",
-					"url": payload.compare,
-					"clear": true
-				});
-			}
 
 			message = `${payload.head_commit.committer.name} has pushed ${context.sha.slice(-7)} to ${payload.repository.full_name}.\n\n` +
-				`Author: ${payload.head_commit.author.username}\n` +
+				`Author: ${(isGithub ? payload.head_commit.author.username : isGitea ? payload.head_commit.author.name : "")}\n` +
+				`Author Email: ${payload.head_commit.author.email}\n` +
 				`Committer: ${payload.head_commit.committer.name}\n` +
-				//`Committer Email: ${payload.head_commit.committer.email}\n` +
+				`Committer Email: ${payload.head_commit.committer.email}\n` +
 				`Ref: ${context.ref}\n` +
-				`Pushed by: ${payload.pusher.name}\n` +
+				`Pushed by: ${(isGithub ? payload.pusher.name : isGitea ? payload.pusher.full_name : "")}\n` +
 				`Workflow Job Name: ${context.job}\n` +
 				`Workflow Name: ${context.workflow}\n\n` +
 				`Commit Message\n${payload.head_commit.message}`;
