@@ -160,9 +160,11 @@ function getInputs() {
 }
 
 async function handleInput() {
+	let inputs = {};
+
 	try {
 		core.info(`Reading inputs ...`);
-		let inputs = getInputs();
+		inputs = getInputs();
 
 		if (inputs.debug) {
 			core.debug("");
