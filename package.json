@@ -1,12 +1,12 @@
 {
 	"name": "ntfy-action",
-	"version": "1.1.0",
+	"version": "1.1.5",
 	"main": "src/index.js",
 	"scripts": {
 		"lint": "eslint .",
 		"test": "jest",
 		"prepare": "ncc build src/index.js -o dist --source-map --license licenses.txt",
-		"beautify": "js-beautify src/index.js -r -q && js-beautify dist/index.js -r -q && js-beautify dist/sourcemap-register.js -r -q",
+		"beautify": "js-beautify src/index.js -r -q --config ./js-beautify.config.json",
 		"all": "npm run lint && npm run prepare && npm run test && npm run beautify"
 	},
 	"repository": {
