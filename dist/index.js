@@ -40273,38 +40273,25 @@ function getIntInput(key, def) {
 }
 
 function getInputs() {
-	let inputs = {
-		debug: false,
-		server_type: "",
-		url: "",
-		basic_auth: "",
-		token_auth: "",
-		tags: "",
-		topic: "",
-		title: "",
-		details: "",
-		priority: 0,
+	return {
+		debug: getBoolInput("debug"),
+		server_type: getStringInput("server_type", "github"),
+		url: getStringInput("url", ""),
+		basic_auth: getStringInput("basic_auth", ""),
+		token_auth: getStringInput("token_auth", ""),
+		tags: getStringInput("tags", "").split(","),
+		topic: getStringInput("topic", ""),
+		title: getStringInput("title", "GitHub Actions"),
+		details: getStringInput("details", ""),
+		priority: getIntInput("priority", 3),
 		messageText: "",
 		actions: "",
 	};
-
-	inputs.debug = getBoolInput("debug");
-	inputs.server_type = getStringInput("server_type", "github");
-	inputs.url = getStringInput("url", "");
-	inputs.basic_auth = getStringInput("basic_auth", "");
-	inputs.token_auth = getStringInput("token_auth", "");
-	inputs.tags = getStringInput("tags", "").split(",");
-	inputs.topic = getStringInput("topic", "");
-	inputs.title = getStringInput("title", "GitHub Actions");
-	inputs.details = getStringInput("details", "");
-	inputs.priority = getIntInput("priority", 3);
-
-	return inputs;
 }
 
 async function handleInput() {
 	let inputs = {};
-	
+
 	try {
 		core.info(`Reading inputs ...`);
 		inputs = getInputs();
@@ -40337,7 +40324,7 @@ async function handleInput() {
 		core.setFailed(error.message);
 	}
 
-	return inputs;
+	return new Promise(inputs);
 }
 
 async function handleRequest(inputs) {
