@@ -40317,24 +40317,23 @@ async function run() {
 		inputs.actions = message[0];
 	} catch (error) {
 		core.error("Failed getting action inputs");
-		if (error.response && error.response.data) core.info(JSON.stringify(error.response.data));
+		if (error.response && error.response.data) console.log(error.response.data);
 		core.setFailed(error.message);
 	}
 
 	try {
 		core.info(`Connecting to endpoint (${inputs.url}) ...`);
 
-		let headers = {};
+		let headers = {
+			"Content-Type": "application/json",
+			"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
+		};
 		if (inputs.token_auth) headers["Authorization"] = `Bearer ${inputs.token_auth}`;
 		else if (inputs.basic_auth) headers["Authorization"] = `Basic ${inputs.basic_auth}`;
 
 		let request = {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
-				...headers,
-			},
+			headers: headers,
 			data: JSON.stringify({
 				topic: inputs.topic,
 				message: inputs.messageText,
@@ -40353,7 +40352,6 @@ async function run() {
 			core.info("");
 		}
 
-		// let response = await fetch(inputs.url, request);
 		const response = await axios({
 			url: inputs.url,
 			...request
@@ -40374,7 +40372,7 @@ async function run() {
 		});
 	} catch (error) {
 		core.error("Failed making request to NTFY service");
-		if (error.response && error.response.data) core.info(JSON.stringify(error.response.data));
+		if (error.response && error.response.data) console.log(error.response.data);
 		core.setFailed(error.message);
 	}
 }
