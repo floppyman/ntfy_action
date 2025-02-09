@@ -181,7 +181,7 @@ async function handleInput() {
 		core.setFailed(error.message);
 	}
 
-	return new Promise(inputs);
+	return new Promise((resolve) => resolve(inputs));
 }
 
 async function handleRequest(inputs) {
