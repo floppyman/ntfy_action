@@ -1,5 +1,21 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
+const axios = require("axios");
+
+let inputs = {
+	debug: false,
+	server_type: "",
+	url: "",
+	basic_auth: "",
+	token_auth: "",
+	tags: "",
+	topic: "",
+	title: "",
+	details: "",
+	priority: 0,
+	messageText: "",
+	actions: "",
+};
 
 /**
  * returns an array with action_buttons and message
@@ -8,18 +24,21 @@ const github = require("@actions/github");
 async function getMessageData(isGithub, isGitea, isDebug) {
 	const context = github.context;
 	const payload = context.payload;
+
 	let action_buttons;
 	let message;
+
 	if (isDebug) {
-		core.info("");
-		core.info("CONTEXT:");
-		core.info(JSON.stringify(context, null, 4));
-		core.info("");
-		core.info("");
-		core.info("PAYLOAD:");
-		core.info(JSON.stringify(payload, null, 4));
-		core.info("");
+		core.debug("");
+		core.debug("CONTEXT:");
+		core.debug(JSON.stringify(context, null, 4));
+		core.debug("");
+		core.debug("");
+		core.debug("PAYLOAD:");
+		core.debug(JSON.stringify(payload, null, 4));
+		core.debug("");
 	}
+
 	switch (context.eventName) {
 		case "push":
 			action_buttons = [{
@@ -103,19 +122,19 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 	}
 }
 
-function getBoolInput(key, def) {
+async function getBoolInput(key, def) {
 	var inp = core.getInput(key);
 	if (inp == "") return def;
 	return inp.toLowerCase() == "true";
 }
 
-function getStringInput(key, def) {
+async function getStringInput(key, def) {
 	var inp = core.getInput(key);
 	if (inp == "") return def;
 	return inp;
 }
 
-function getIntInput(key, def) {
+async function getIntInput(key, def) {
 	var inp = core.getInput(key);
 	if (inp == "") return def;
 	try {
@@ -125,68 +144,60 @@ function getIntInput(key, def) {
 	}
 }
 
-async function run() {
-	let debug = false;
-	let server_type = "";
-	let url = "";
-	let headers = {};
-	let basicAuth = "";
-	let tokenAuth = "";
-	let tags = "";
-	let topic = "";
-	let title = "";
-	let details = "";
-	let priority = 0;
-	let messageText = "";
-	let actions = "";
+async function getInputs() {
+	inputs.debug = getBoolInput("debug");
+	inputs.server_type = getStringInput("server_type", "github");
+	inputs.url = getStringInput("url", "");
+	inputs.basic_auth = getStringInput("basic_auth", "");
+	inputs.token_auth = getStringInput("token_auth", "");
+	inputs.tags = getStringInput("tags", "").split(",");
+	inputs.topic = getStringInput("topic", "");
+	inputs.title = getStringInput("title", "GitHub Actions");
+	inputs.details = getStringInput("details", "");
+	inputs.priority = getIntInput("priority", 3);
+}
 
+async function handleInput() {
 	try {
 		core.info(`Reading inputs ...`);
+		getInputs();
 
-		debug = getBoolInput("debug");
-		server_type = getStringInput("server_type", "github");
-		url = getStringInput("url", "");
-		basicAuth = getStringInput("basicAuth", "");
-		tokenAuth = getStringInput("tokenAuth", "");
-		tags = getStringInput("tags", "").split(",");
-		topic = getStringInput("topic", "");
-		title = getStringInput("title", "GitHub Actions");
-		details = getStringInput("details", "");
-		priority = getIntInput("priority", 3);
-
-		if (debug) {
-			core.info("");
-			core.info("INPUT VALUES:");
-			core.info(`  URL: ${url}`);
-			core.info(`  BasicAuth: ${basicAuth}`);
-			core.info(`  TokenAuth: ${tokenAuth}`);
-			core.info(`  Tags: ${tags}`);
-			core.info(`  Topic: ${topic}`);
-			core.info(`  Title: ${title}`);
-			core.info(`  Details: ${details}`);
-			core.info(`  Priority: ${priority}`);
-			core.info("");
+		if (inputs.debug) {
+			core.debug("");
+			core.debug("INPUT VALUES:");
+			core.debug(`  URL: ${inputs.url}`);
+			core.debug(`  BasicAuth: ${inputs.basic_auth}`);
+			core.debug(`  TokenAuth: ${inputs.token_auth}`);
+			core.debug(`  Tags: ${inputs.tags}`);
+			core.debug(`  Topic: ${inputs.topic}`);
+			core.debug(`  Title: ${inputs.title}`);
+			core.debug(`  Details: ${inputs.details}`);
+			core.debug(`  Priority: ${inputs.priority}`);
+			core.debug("");
 		}
 
-		let isGithub = server_type === "github";
-		let isGitea = server_type === "gitea";
+		let isGithub = inputs.server_type === "github";
+		let isGitea = inputs.server_type === "gitea";
 
 		core.info(`Creating GIT Information ...`);
-		let message = await getMessageData(isGithub, isGitea, debug);
+		let message = await getMessageData(isGithub, isGitea, inputs.debug);
 
-		messageText = `${message[1]} \n\n ${details}`;
-		actions = message[0];
+		inputs.messageText = `${message[1]} \n\n ${inputs.details}`;
+		inputs.actions = message[0];
 	} catch (error) {
 		core.info("Failed getting action inputs");
 		if (error.response && error.response.data) core.info(JSON.stringify(error.response.data));
 		core.setFailed(error.message);
 	}
+}
 
+async function handleRequest() {
 	try {
-		core.info(`Connecting to endpoint (${url}) ...`);
+		core.info(`Connecting to endpoint (${inputs.url}) ...`);
 
-		if (tokenAuth) headers["Authorization"] = `Bearer ${tokenAuth}`;
-		else if (basicAuth) headers["Authorization"] = `Basic ${basicAuth}`;
+		let headers = {};
+		if (inputs.token_auth) headers["Authorization"] = `Bearer ${inputs.token_auth}`;
+		else if (inputs.basic_auth) headers["Authorization"] = `Basic ${inputs.basic_auth}`;
 
 		let request = {
 			method: "POST",
@@ -195,29 +206,49 @@ async function run() {
 				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
 				...headers,
 			},
-			data: JSON.stringify({
-				topic: topic,
-				message: messageText,
-				title: title,
-				tags: tags,
-				priority: priority,
-				actions: actions,
-			}),
+			data: {
+				topic: inputs.topic,
+				message: inputs.messageText,
+				title: inputs.title,
+				tags: inputs.tags,
+				priority: inputs.priority,
+				actions: inputs.actions,
+			},
 		};
-		if (debug) {
-			core.info("");
-			core.info(`URL: ${url}`);
-			core.info("REQUEST:");
-			core.info(JSON.stringify(request, null, 4));
-			core.info("");
-		}
-		let response = await fetch(url, request);
 
-		if (debug) {
-			core.info("");
-			core.info("RESPONSE:");
-			core.info(JSON.stringify(response, null, 4));
-			core.info("");
+		if (inputs.debug) {
+			core.debug("");
+			core.debug(`URL: ${inputs.url}`);
+			core.debug("REQUEST:");
+			core.debug(JSON.stringify(request, null, 4));
+			core.debug("");
+		}
+
+		let response = await fetch(inputs.url, request);
+		//const response = await axios({
+		//    url: inputs.url,
+		//	...request
+		//    //method: 'POST',
+		//    //headers: {
+		//    //    'Content-Type': 'application/json',
+		//    //    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0',
+		//    //    'Priority': priority,
+		//    //    ...headers
+		//    //},
+		//    //data: JSON.stringify({
+		//    //    'topic': topic,
+		//    //    'tags': tags,
+		//    //    'title': (title),
+		//    //    'actions': message[0],
+		//    //    "message": message[1] + "\n\n" + details
+		//    //})
+		//})
+
+		if (inputs.debug) {
+			core.debug("");
+			core.debug("RESPONSE:");
+			core.debug(JSON.stringify(response, null, 4));
+			core.debug("");
 		}
 
 		core.setOutput("response", {
@@ -228,6 +259,11 @@ async function run() {
 		if (error.response && error.response.data) core.info(JSON.stringify(error.response.data));
 		core.setFailed(error.message);
 	}
+}
+
+async function run() {
+	await handleInput();
+	await handleRequest();
 }
 
 run();

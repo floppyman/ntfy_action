@@ -5,29 +5,48 @@ branding:
   color: "blue"
 inputs:
   url:
-    description: Server URL
+    description: "Server URL."
     required: true
+    default: "https://ntfy.sh"
   topic:
-    description: ntfy topic
+    description: "NTFY topic."
     required: true
+    default: "ntfy_action"
   tags:
-    description: Tags for the message seperated by commas
+    description: "Tags for the message seperated by commas."
     required: false
+    default: ""
   title:
-    description: ntfy message title.
+    description: "NTFY message title."
     required: false
-  headers:
-    description: Authentication headers or others if needed.
+    default: "GitHub Action"
+  basicAuth:
+    description: "Authentication using basic method."
     required: false
+    default: ""
+  tokenAuth:
+    description: "Authentication using token method."
+    required: false
+    default: ""
   details:
-    description: Additional text after the notification message.
+    description: "Additional text after the notification message."
     required: false
+    default: ""
   priority:
-    description: Message priority.
+    description: "Message priority."
     required: false
+    default: 0
+  server_type:
+    description: "Type of server the actions is used on, values: github or gitea."
+    required: false
+    default: "github"
+  debug:
+    description: "Prints debug information for dev/troubleshooting."
+    required: false
+    default: false
 outputs:
   response:
-    description: "The response of POST request"
+    description: "The response of POST request."
 runs:
-  using: "node16"
+  using: "node20"
   main: "dist/index.js"
