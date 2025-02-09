@@ -152,6 +152,7 @@ async function run() {
 	try {
 		core.info(`Reading inputs ...`);
 		inputs = getInputs();
+		console.log(inputs)
 
 		if (inputs.debug) {
 			core.info("");
@@ -176,7 +177,7 @@ async function run() {
 		inputs.messageText = `${message[1]} \n\n ${inputs.details}`;
 		inputs.actions = message[0];
 	} catch (error) {
-		core.info("Failed getting action inputs");
+		core.error("Failed getting action inputs");
 		if (error.response && error.response.data) core.info(JSON.stringify(error.response.data));
 		core.setFailed(error.message);
 	}
@@ -244,7 +245,7 @@ async function run() {
 			statusCode: response.statusCode,
 		});
 	} catch (error) {
-		core.info("Failed making request to NTFY service");
+		core.error("Failed making request to NTFY service");
 		if (error.response && error.response.data) core.info(JSON.stringify(error.response.data));
 		core.setFailed(error.message);
 	}
