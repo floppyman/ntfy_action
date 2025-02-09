@@ -40285,7 +40285,7 @@ function getInputs() {
 	};
 }
 
-async function handleInput() {
+async function run() {
 	let inputs = {};
 
 	try {
@@ -40320,11 +40320,6 @@ async function handleInput() {
 		core.setFailed(error.message);
 	}
 
-	core.debug(inputs)
-	return new Promise((resolve) => resolve(inputs));
-}
-
-async function handleRequest(inputs) {
 	try {
 		core.info(`Connecting to endpoint (${inputs.url}) ...`);
 
@@ -40392,11 +40387,6 @@ async function handleRequest(inputs) {
 		if (error.response && error.response.data) core.info(JSON.stringify(error.response.data));
 		core.setFailed(error.message);
 	}
-}
-
-async function run() {
-	let inputs = await handleInput();
-	await handleRequest(inputs);
 }
 
 run();
