@@ -152,7 +152,6 @@ async function run() {
 	try {
 		core.info(`Reading inputs ...`);
 		inputs = getInputs();
-		console.log(inputs);
 
 		if (inputs.debug) {
 			core.info("");
@@ -178,12 +177,12 @@ async function run() {
 		inputs.actions = message[0];
 	} catch (error) {
 		core.error("Failed getting action inputs");
-		if (error.response && error.response.data) console.log(error.response.data);
+		if (error.response && error.response.data) core.error(JSON.stringify(request, null, 4));
 		core.setFailed(error.message);
 	}
 
 	try {
-		core.info(`Connecting to endpoint (${inputs.url}) ...`);
+		core.info(`Connecting to endpoint ${inputs.url} ...`);
 
 		let headers = {
 			"Content-Type": "application/json",
@@ -228,14 +227,14 @@ async function run() {
 			core.info("");
 		}
 
-		if (response.status == 200) core.info(`Notification successfully posted (${inputs.url}/${inputs.topic}) ...`);
+		if (response.status == 200) core.info(`Notification successfully posted to ${inputs.url}/${inputs.topic}`);
 
 		core.setOutput("response", {
 			statusCode: response.status,
 		});
 	} catch (error) {
 		core.error("Failed making request to NTFY service");
-		if (error.response && error.response.data) console.log(error.response.data);
+		if (error.response && error.response.data) core.error(JSON.stringify(request, null, 4));
 		core.setFailed(error.message);
 	}
 }
