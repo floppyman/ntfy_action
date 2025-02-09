@@ -31842,11 +31842,11 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 	if (isDebug) {
 		core.info("");
 		core.info("CONTEXT:");
-		core.info(context);
+		core.info(JSON.stringify(context, null, 4));
 		core.info("");
 		core.info("");
 		core.info("PAYLOAD:");
-		core.info(payload);
+		core.info(JSON.stringify(payload, null, 4));
 		core.info("");
 	}
 	switch (context.eventName) {
@@ -31958,7 +31958,8 @@ function getObjectInput(key, def) {
 	var inp = getStringInput(key, "{}");
 	try {
 		return JSON.parse(inp);
-	} catch {
+	} catch (err) {
+		core.info(err)
 		return def;
 	}
 }
@@ -31993,7 +31994,7 @@ async function run() {
 			core.info("");
 			core.info("INPUT VALUES:");
 			core.info(`  URL: ${url}`);
-			core.info(`  Headers: ${JSON.stringify(headers)}`);
+			core.info(`  Headers: ${JSON.stringify(headers, null, 4)}`);
 			core.info(`  Tags: ${tags}`);
 			core.info(`  Topic: ${topic}`);
 			core.info(`  Title: ${title}`);
@@ -32037,7 +32038,7 @@ async function run() {
 			core.info("");
 			core.info(`URL: ${url}`);
 			core.info("REQUEST:");
-			core.info(JSON.stringify(request));
+			core.info(JSON.stringify(request, null, 4));
 			core.info("");
 		}
 		let response = await fetch(url, request);
