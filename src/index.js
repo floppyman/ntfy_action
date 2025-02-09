@@ -214,25 +214,11 @@ async function run() {
 			core.info("");
 		}
 
-		let response = await fetch(inputs.url, request);
-		//const response = await axios({
-		//    url: inputs.url,
-		//	...request
-		//    //method: 'POST',
-		//    //headers: {
-		//    //    'Content-Type': 'application/json',
-		//    //    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0',
-		//    //    'Priority': priority,
-		//    //    ...headers
-		//    //},
-		//    //data: JSON.stringify({
-		//    //    'topic': topic,
-		//    //    'tags': tags,
-		//    //    'title': (title),
-		//    //    'actions': message[0],
-		//    //    "message": message[1] + "\n\n" + details
-		//    //})
-		//})
+		// let response = await fetch(inputs.url, request);
+		const response = await axios({
+			url: inputs.url,
+			...request
+		})
 
 		if (inputs.debug) {
 			core.info("");
