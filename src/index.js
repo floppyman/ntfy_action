@@ -11,8 +11,14 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 	let action_buttons;
 	let message;
 	if (isDebug) {
-		console.log("Context:", context);
-		console.log("Payload:", payload);
+		core.info("");
+		core.info("CONTEXT:");
+		core.info(context);
+		core.info("");
+		core.info("");
+		core.info("PAYLOAD:");
+		core.info(payload);
+		core.info("");
 	}
 	switch (context.eventName) {
 		case "push":
@@ -132,7 +138,7 @@ async function run() {
 	let debug = false;
 	let server_type = "";
 	let url = "";
-	let headers = "";
+	let headers = {};
 	let tags = "";
 	let topic = "";
 	let title = "";
@@ -155,7 +161,8 @@ async function run() {
 		priority = getIntInput("priority", 3);
 
 		if (debug) {
-			core.info("Input Values:");
+			core.info("");
+			core.info("INPUT VALUES:");
 			core.info(`  URL: ${url}`);
 			core.info(`  Headers: ${JSON.stringify(headers)}`);
 			core.info(`  Tags: ${tags}`);
@@ -163,6 +170,7 @@ async function run() {
 			core.info(`  Title: ${title}`);
 			core.info(`  Details: ${details}`);
 			core.info(`  Priority: ${priority}`);
+			core.info("");
 		}
 
 		let isGithub = server_type === "github";
@@ -197,8 +205,11 @@ async function run() {
 			}),
 		};
 		if (debug) {
-			core.info(url);
-			core.info(request);
+			core.info("");
+			core.info(`URL: ${url}`);
+			core.info("REQUEST:");
+			core.info(JSON.stringify(request));
+			core.info("");
 		}
 		let response = await fetch(url, request);
 		core.setOutput("response", {
