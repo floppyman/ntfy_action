@@ -14,14 +14,14 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 	let message;
 
 	if (isDebug) {
-		core.debug("");
-		core.debug("CONTEXT:");
-		core.debug(JSON.stringify(context, null, 4));
-		core.debug("");
-		core.debug("");
-		core.debug("PAYLOAD:");
-		core.debug(JSON.stringify(payload, null, 4));
-		core.debug("");
+		core.info("");
+		core.info("CONTEXT:");
+		core.info(JSON.stringify(context, null, 4));
+		core.info("");
+		core.info("");
+		core.info("PAYLOAD:");
+		core.info(JSON.stringify(payload, null, 4));
+		core.info("");
 	}
 
 	switch (context.eventName) {
@@ -154,17 +154,17 @@ async function run() {
 		inputs = getInputs();
 
 		if (inputs.debug) {
-			core.debug("");
-			core.debug("INPUT VALUES:");
-			core.debug(`  URL: ${inputs.url}`);
-			core.debug(`  BasicAuth: ${inputs.basic_auth}`);
-			core.debug(`  TokenAuth: ${inputs.token_auth}`);
-			core.debug(`  Tags: ${inputs.tags}`);
-			core.debug(`  Topic: ${inputs.topic}`);
-			core.debug(`  Title: ${inputs.title}`);
-			core.debug(`  Details: ${inputs.details}`);
-			core.debug(`  Priority: ${inputs.priority}`);
-			core.debug("");
+			core.info("");
+			core.info("INPUT VALUES:");
+			core.info(`  URL: ${inputs.url}`);
+			core.info(`  BasicAuth: ${inputs.basic_auth}`);
+			core.info(`  TokenAuth: ${inputs.token_auth}`);
+			core.info(`  Tags: ${inputs.tags}`);
+			core.info(`  Topic: ${inputs.topic}`);
+			core.info(`  Title: ${inputs.title}`);
+			core.info(`  Details: ${inputs.details}`);
+			core.info(`  Priority: ${inputs.priority}`);
+			core.info("");
 		}
 
 		let isGithub = inputs.server_type === "github";
@@ -206,11 +206,11 @@ async function run() {
 		};
 
 		if (inputs.debug) {
-			core.debug("");
-			core.debug(`URL: ${inputs.url}`);
-			core.debug("REQUEST:");
-			core.debug(JSON.stringify(request, null, 4));
-			core.debug("");
+			core.info("");
+			core.info(`URL: ${inputs.url}`);
+			core.info("REQUEST:");
+			core.info(JSON.stringify(request, null, 4));
+			core.info("");
 		}
 
 		let response = await fetch(inputs.url, request);
@@ -234,10 +234,10 @@ async function run() {
 		//})
 
 		if (inputs.debug) {
-			core.debug("");
-			core.debug("RESPONSE:");
-			core.debug(JSON.stringify(response, null, 4));
-			core.debug("");
+			core.info("");
+			core.info("RESPONSE:");
+			core.info(JSON.stringify(response, null, 4));
+			core.info("");
 		}
 
 		core.setOutput("response", {
