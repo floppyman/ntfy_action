@@ -32042,6 +32042,14 @@ async function run() {
 			core.info("");
 		}
 		let response = await fetch(url, request);
+
+		if (debug){
+			core.info("");
+			core.info("RESPONSE:");
+			core.info(JSON.stringify(response, null, 4));
+			core.info("");
+		}
+
 		core.setOutput("response", {
 			statusCode: response.statusCode,
 		});
