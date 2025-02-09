@@ -2,21 +2,6 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 const axios = require("axios");
 
-let inputs = {
-	debug: false,
-	server_type: "",
-	url: "",
-	basic_auth: "",
-	token_auth: "",
-	tags: "",
-	topic: "",
-	title: "",
-	details: "",
-	priority: 0,
-	messageText: "",
-	actions: "",
-};
-
 /**
  * returns an array with action_buttons and message
  * @returns array
@@ -145,6 +130,21 @@ function getIntInput(key, def) {
 }
 
 function getInputs() {
+	let inputs = {
+		debug: false,
+		server_type: "",
+		url: "",
+		basic_auth: "",
+		token_auth: "",
+		tags: "",
+		topic: "",
+		title: "",
+		details: "",
+		priority: 0,
+		messageText: "",
+		actions: "",
+	};
+
 	inputs.debug = getBoolInput("debug");
 	inputs.server_type = getStringInput("server_type", "github");
 	inputs.url = getStringInput("url", "");
@@ -155,12 +155,14 @@ function getInputs() {
 	inputs.title = getStringInput("title", "GitHub Actions");
 	inputs.details = getStringInput("details", "");
 	inputs.priority = getIntInput("priority", 3);
+
+	return inputs;
 }
 
 async function handleInput() {
 	try {
 		core.info(`Reading inputs ...`);
-		getInputs();
+		let inputs = getInputs();
 
 		if (inputs.debug) {
 			core.debug("");
@@ -189,9 +191,11 @@ async function handleInput() {
 		if (error.response && error.response.data) core.info(JSON.stringify(error.response.data));
 		core.setFailed(error.message);
 	}
+
+	return inputs;
 }
 
-async function handleRequest() {
+async function handleRequest(inputs) {
 	try {
 		core.info(`Connecting to endpoint (${inputs.url}) ...`);
 
@@ -262,8 +266,8 @@ async function handleRequest() {
 }
 
 async function run() {
-	await handleInput();
-	await handleRequest();
+	let inputs = await handleInput();
+	await handleRequest(inputs);
 }
 
 run();
