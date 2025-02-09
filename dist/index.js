@@ -40165,8 +40165,7 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 
 	switch (context.eventName) {
 		case "push":
-			action_buttons = [
-				{
+			action_buttons = [{
 					action: "view",
 					label: "Compare",
 					url: isGithub ? payload.compare : isGitea ? payload.compare_url : "",
@@ -40189,8 +40188,7 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			return [action_buttons, message];
 
 		case "release":
-			action_buttons = [
-				{
+			action_buttons = [{
 					action: "view",
 					label: "Release URL",
 					url: payload.release.html_url,
@@ -40213,8 +40211,7 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			return [action_buttons, message];
 
 		case "schedule":
-			action_buttons = [
-				{
+			action_buttons = [{
 					action: "view",
 					label: "Visit Repository",
 					url: `https://github.com/${process.env.GITHUB_REPOSITORY}`,
@@ -40231,8 +40228,7 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			return [action_buttons, message];
 
 		default:
-			action_buttons = [
-				{
+			action_buttons = [{
 					action: "view",
 					label: "Visit Repo",
 					url: payload.repository.html_url,
@@ -40324,6 +40320,7 @@ async function handleInput() {
 		core.setFailed(error.message);
 	}
 
+	core.debug(inputs)
 	return new Promise((resolve) => resolve(inputs));
 }
 
