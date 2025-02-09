@@ -31851,7 +31851,8 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 	}
 	switch (context.eventName) {
 		case "push":
-			action_buttons = [{
+			action_buttons = [
+				{
 					action: "view",
 					label: "Compare",
 					url: isGithub ? payload.compare : isGitea ? payload.compare_url : "",
@@ -31874,7 +31875,8 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			return [action_buttons, message];
 
 		case "release":
-			action_buttons = [{
+			action_buttons = [
+				{
 					action: "view",
 					label: "Release URL",
 					url: payload.release.html_url,
@@ -31897,7 +31899,8 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			return [action_buttons, message];
 
 		case "schedule":
-			action_buttons = [{
+			action_buttons = [
+				{
 					action: "view",
 					label: "Visit Repository",
 					url: `https://github.com/${process.env.GITHUB_REPOSITORY}`,
@@ -31914,7 +31917,8 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			return [action_buttons, message];
 
 		default:
-			action_buttons = [{
+			action_buttons = [
+				{
 					action: "view",
 					label: "Visit Repo",
 					url: payload.repository.html_url,
@@ -31954,21 +31958,13 @@ function getIntInput(key, def) {
 	}
 }
 
-function getObjectInput(key, def) {
-	var inp = getStringInput(key, "{}");
-	try {
-		return JSON.parse(inp);
-	} catch (err) {
-		core.info(err)
-		return def;
-	}
-}
-
 async function run() {
 	let debug = false;
 	let server_type = "";
 	let url = "";
 	let headers = {};
+	let basicAuth = "";
+	let tokenAuth = "";
 	let tags = "";
 	let topic = "";
 	let title = "";
@@ -31983,7 +31979,8 @@ async function run() {
 		debug = getBoolInput("debug");
 		server_type = getStringInput("server_type", "github");
 		url = getStringInput("url", "");
-		headers = getObjectInput("headers", {});
+		basicAuth = getStringInput("basicAuth", "");
+		tokenAuth = getStringInput("tokenAuth", "");
 		tags = getStringInput("tags", "").split(",");
 		topic = getStringInput("topic", "");
 		title = getStringInput("title", "GitHub Actions");
@@ -31994,7 +31991,8 @@ async function run() {
 			core.info("");
 			core.info("INPUT VALUES:");
 			core.info(`  URL: ${url}`);
-			core.info(`  Headers: ${JSON.stringify(headers, null, 4)}`);
+			core.info(`  BasicAuth: ${basicAuth}`);
+			core.info(`  TokenAuth: ${tokenAuth}`);
 			core.info(`  Tags: ${tags}`);
 			core.info(`  Topic: ${topic}`);
 			core.info(`  Title: ${title}`);
@@ -32006,7 +32004,7 @@ async function run() {
 		let isGithub = server_type === "github";
 		let isGitea = server_type === "gitea";
 
-		core.info(`Connecting to endpoint (${url}) ...`);
+		core.info(`Creating GIT Information ...`);
 		let message = await getMessageData(isGithub, isGitea, debug);
 
 		messageText = `${message[1]} \n\n ${details}`;
@@ -32018,6 +32016,11 @@ async function run() {
 	}
 
 	try {
+		core.info(`Connecting to endpoint (${url}) ...`);
+
+		if (tokenAuth) headers["Authorization"] = `Bearer ${tokenAuth}`;
+		else if (basicAuth) headers["Authorization"] = `Basic ${basicAuth}`;
+
 		let request = {
 			method: "POST",
 			headers: {
@@ -32038,8 +32041,7 @@ async function run() {
 			core.info("");
 			core.info(`URL: ${url}`);
 			core.info("REQUEST:");
-			//core.info(JSON.stringify(request, null, 4));
-			console.log(JSON.stringify(request, null, 4));
+			core.info(JSON.stringify(request, null, 4));
 			core.info("");
 		}
 		let response = await fetch(url, request);
@@ -32047,8 +32049,7 @@ async function run() {
 		if (debug) {
 			core.info("");
 			core.info("RESPONSE:");
-			// core.info(JSON.stringify(response, null, 4));
-			console.log(JSON.stringify(response, null, 4));
+			core.info(JSON.stringify(response, null, 4));
 			core.info("");
 		}
 
