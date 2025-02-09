@@ -31917,17 +31917,17 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 }
 
 async function run() {
-	const debug = false;
-	const server_type = "github";
-	const url = "";
-	const headers = "{}";
-	const tags = "";
-	const topic = "";
-	const title = "GitHub Actions";
-	const details = "";
-	const priority = 3;
-	const messageText = "";
-	const actions = "";
+	let debug = false;
+	let server_type = "";
+	let url = "";
+	let headers = "";
+	let tags = "";
+	let topic = "";
+	let title = "";
+	let details = "";
+	let priority = 0;
+	let messageText = "";
+	let actions = "";
 
 	try {
 		debug = core.getInput("debug") || false;
@@ -31981,7 +31981,7 @@ async function run() {
 			console.log(url);
 			console.log(request);
 		}
-		const response = await fetch(url, request);
+		let response = await fetch(url, request);
 		core.setOutput("response", {
 			statusCode: response.statusCode,
 		});
