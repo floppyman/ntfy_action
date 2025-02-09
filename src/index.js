@@ -152,7 +152,7 @@ async function run() {
 	try {
 		core.info(`Reading inputs ...`);
 		inputs = getInputs();
-		console.log(inputs)
+		console.log(inputs);
 
 		if (inputs.debug) {
 			core.info("");
@@ -215,18 +215,20 @@ async function run() {
 
 		const response = await axios({
 			url: inputs.url,
-			...request
-		})
+			...request,
+		});
 
 		if (inputs.debug) {
 			core.info("");
 			core.info("RESPONSE:");
-			core.info(JSON.stringify(response, null, 4));
+			core.info(`  statusCode: ${response.statusCode}`);
+			core.info(`  status: ${response.status}`);
+			core.info(`  statusText: ${response.statusText}`);
+			core.info(`  body: ${response.body}`);
 			core.info("");
 		}
 
-		if (response.statusCode == 200)
-			core.info(`Notification successfully posted (${inputs.url}/${inputs.topic}) ...`);
+		if (response.statusCode == 200) core.info(`Notification successfully posted (${inputs.url}/${inputs.topic}) ...`);
 
 		core.setOutput("response", {
 			statusCode: response.statusCode,
