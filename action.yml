@@ -20,12 +20,12 @@ inputs:
     description: "NTFY message title."
     required: false
     default: "GitHub Action"
-  basicAuth:
-    description: "Authentication using basic method."
+  basic_auth:
+    description: "Authentication using basic method, should just be the secret value."
     required: false
     default: ""
-  tokenAuth:
-    description: "Authentication using token method."
+  token_auth:
+    description: "Authentication using token method, should just be the secret value."
     required: false
     default: ""
   details:
