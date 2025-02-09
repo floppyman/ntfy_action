@@ -221,17 +221,17 @@ async function run() {
 		if (inputs.debug) {
 			core.info("");
 			core.info("RESPONSE:");
-			core.info(`  statusCode: ${response.statusCode}`);
 			core.info(`  status: ${response.status}`);
 			core.info(`  statusText: ${response.statusText}`);
+			core.info(`  statusCode: ${response.statusCode}`);
 			core.info(`  body: ${response.body}`);
 			core.info("");
 		}
 
-		if (response.statusCode == 200) core.info(`Notification successfully posted (${inputs.url}/${inputs.topic}) ...`);
+		if (response.status == 200) core.info(`Notification successfully posted (${inputs.url}/${inputs.topic}) ...`);
 
 		core.setOutput("response", {
-			statusCode: response.statusCode,
+			statusCode: response.status,
 		});
 	} catch (error) {
 		core.error("Failed making request to NTFY service");

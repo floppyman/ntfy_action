@@ -40165,8 +40165,7 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 
 	switch (context.eventName) {
 		case "push":
-			action_buttons = [
-				{
+			action_buttons = [{
 					action: "view",
 					label: "Compare",
 					url: isGithub ? payload.compare : isGitea ? payload.compare_url : "",
@@ -40189,8 +40188,7 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			return [action_buttons, message];
 
 		case "release":
-			action_buttons = [
-				{
+			action_buttons = [{
 					action: "view",
 					label: "Release URL",
 					url: payload.release.html_url,
@@ -40213,8 +40211,7 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			return [action_buttons, message];
 
 		case "schedule":
-			action_buttons = [
-				{
+			action_buttons = [{
 					action: "view",
 					label: "Visit Repository",
 					url: `https://github.com/${process.env.GITHUB_REPOSITORY}`,
@@ -40231,8 +40228,7 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 			return [action_buttons, message];
 
 		default:
-			action_buttons = [
-				{
+			action_buttons = [{
 					action: "view",
 					label: "Visit Repo",
 					url: payload.repository.html_url,
@@ -40364,17 +40360,17 @@ async function run() {
 		if (inputs.debug) {
 			core.info("");
 			core.info("RESPONSE:");
-			core.info(`  statusCode: ${response.statusCode}`);
 			core.info(`  status: ${response.status}`);
 			core.info(`  statusText: ${response.statusText}`);
+			core.info(`  statusCode: ${response.statusCode}`);
 			core.info(`  body: ${response.body}`);
 			core.info("");
 		}
 
-		if (response.statusCode == 200) core.info(`Notification successfully posted (${inputs.url}/${inputs.topic}) ...`);
+		if (response.status == 200) core.info(`Notification successfully posted (${inputs.url}/${inputs.topic}) ...`);
 
 		core.setOutput("response", {
-			statusCode: response.statusCode,
+			statusCode: response.status,
 		});
 	} catch (error) {
 		core.error("Failed making request to NTFY service");
