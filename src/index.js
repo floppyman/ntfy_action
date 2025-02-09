@@ -122,19 +122,19 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 	}
 }
 
-async function getBoolInput(key, def) {
+function getBoolInput(key, def) {
 	var inp = core.getInput(key);
 	if (inp == "") return def;
 	return inp.toLowerCase() == "true";
 }
 
-async function getStringInput(key, def) {
+function getStringInput(key, def) {
 	var inp = core.getInput(key);
 	if (inp == "") return def;
 	return inp;
 }
 
-async function getIntInput(key, def) {
+function getIntInput(key, def) {
 	var inp = core.getInput(key);
 	if (inp == "") return def;
 	try {
@@ -144,7 +144,7 @@ async function getIntInput(key, def) {
 	}
 }
 
-async function getInputs() {
+function getInputs() {
 	inputs.debug = getBoolInput("debug");
 	inputs.server_type = getStringInput("server_type", "github");
 	inputs.url = getStringInput("url", "");
