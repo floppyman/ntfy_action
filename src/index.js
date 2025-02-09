@@ -209,7 +209,8 @@ async function run() {
 			core.info("");
 			core.info(`URL: ${url}`);
 			core.info("REQUEST:");
-			core.info(JSON.stringify(request, null, 4));
+			//core.info(JSON.stringify(request, null, 4));
+			console.log(JSON.stringify(request, null, 4));
 			core.info("");
 		}
 		let response = await fetch(url, request);
@@ -217,7 +218,8 @@ async function run() {
 		if (debug) {
 			core.info("");
 			core.info("RESPONSE:");
-			core.info(JSON.stringify(response, null, 4));
+			// core.info(JSON.stringify(response, null, 4));
+			console.log(JSON.stringify(response, null, 4));
 			core.info("");
 		}
 
