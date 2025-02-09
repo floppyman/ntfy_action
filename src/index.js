@@ -196,14 +196,14 @@ async function run() {
 				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0",
 				...headers,
 			},
-			data: {
+			data: JSON.stringify({
 				topic: inputs.topic,
 				message: inputs.messageText,
 				title: inputs.title,
 				tags: inputs.tags,
 				priority: inputs.priority,
 				actions: inputs.actions,
-			},
+			}),
 		};
 
 		if (inputs.debug) {
@@ -226,6 +226,9 @@ async function run() {
 			core.info(JSON.stringify(response, null, 4));
 			core.info("");
 		}
+
+		if (response.statusCode == 200)
+			core.info(`Notification successfully posted (${inputs.url}/${inputs.topic}) ...`);
 
 		core.setOutput("response", {
 			statusCode: response.statusCode,
