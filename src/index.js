@@ -6,7 +6,7 @@ const axios = require("axios");
  * returns an array with action_buttons and message
  * @returns array
  */
-async function getMessageData(isGithub, isGitea, isDebug) {
+async function getMessageData(isGithub, isGitea, isDebug, simpleMessage) {
 	const context = github.context;
 	const payload = context.payload;
 
@@ -26,6 +26,14 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 
 	switch (context.eventName) {
 		case "push":
+			if (simpleMessage) {
+				message = `${payload.head_commit.committer.name} has pushed ${context.sha.slice(-7)} to ${payload.repository.full_name}.\n\n`;
+				message += `Ref: ${context.ref}\n`;
+				message += `Workflow Job Name: ${context.job}\n`;
+				message += `Workflow Name: ${context.workflow}\n\n`;
+				return [null, message];
+			}
+
 			action_buttons = [{
 					action: "view",
 					label: "Compare",
@@ -45,10 +53,29 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 					clear: true,
 				},
 			];
-			message = `${payload.head_commit.committer.name} has pushed ${context.sha.slice(-7)} to ${payload.repository.full_name}.\n\n` + `Author: ${isGithub ? payload.head_commit.author.username : isGitea ? payload.head_commit.author.name : ""}\n` + `Author Email: ${payload.head_commit.author.email}\n` + `Committer: ${payload.head_commit.committer.name}\n` + `Committer Email: ${payload.head_commit.committer.email}\n` + `Ref: ${context.ref}\n` + `Pushed by: ${isGithub ? payload.pusher.name : isGitea ? payload.pusher.full_name : ""}\n` + `Workflow Job Name: ${context.job}\n` + `Workflow Name: ${context.workflow}\n\n` + `Commit Message\n${payload.head_commit.message}`;
+			message = `${payload.head_commit.committer.name} has pushed ${context.sha.slice(-7)} to ${payload.repository.full_name}.\n\n`;
+			message += `Author: ${isGithub ? payload.head_commit.author.username : isGitea ? payload.head_commit.author.name : ""}\n`;
+			message += `Author Email: ${payload.head_commit.author.email}\n`;
+			message += `Committer: ${payload.head_commit.committer.name}\n`;
+			message += `Committer Email: ${payload.head_commit.committer.email}\n`;
+			message += `Ref: ${context.ref}\n`;
+			message += `Pushed by: ${isGithub ? payload.pusher.name : isGitea ? payload.pusher.full_name : ""}\n`;
+			message += `Workflow Job Name: ${context.job}\n`;
+			message += `Workflow Name: ${context.workflow}\n\n`;
+			message += `Commit Message\n${payload.head_commit.message}`;
 			return [action_buttons, message];
 
 		case "release":
+			if (simpleMessage) {
+				message = `${payload.release.author.login} has ${payload.action} ${payload.release.tag_name} on ${payload.repository.full_name}.\n\n`;
+				message += `Name: ${payload.release.name}\n`;
+				message += `Prerelease: ${payload.release.prerelease}\n`;
+				message += `Workflow Job Name: ${context.job}\n`;
+				message += `Workflow Name: ${context.workflow}\n\n`;
+				message += `Release Message\n${payload.release.body}`;
+				return [null, message];
+			}
+
 			action_buttons = [{
 					action: "view",
 					label: "Release URL",
@@ -68,10 +95,25 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 					clear: true,
 				},
 			];
-			message = `${payload.release.author.login} has ${payload.action} ${payload.release.tag_name} on ${payload.repository.full_name}.\n\n` + `Repo: ${payload.repository.html_url}\n` + `Name: ${payload.release.name}\n` + `Author: ${payload.release.author.login}\n` + `Prerelease: ${payload.release.prerelease}\n` + `Workflow Job Name: ${context.job}\n` + `Workflow Name: ${context.workflow}\n\n` + `Release Message\n${payload.release.body}`;
+			message = `${payload.release.author.login} has ${payload.action} ${payload.release.tag_name} on ${payload.repository.full_name}.\n\n`;
+			message += `Repo: ${payload.repository.html_url}\n`;
+			message += `Name: ${payload.release.name}\n`;
+			message += `Author: ${payload.release.author.login}\n`;
+			message += `Prerelease: ${payload.release.prerelease}\n`;
+			message += `Workflow Job Name: ${context.job}\n`;
+			message += `Workflow Name: ${context.workflow}\n\n`;
+			message += `Release Message\n${payload.release.body}`;
 			return [action_buttons, message];
 
 		case "schedule":
+			message = `Scheduled task "${context.job}" ran in ${process.env.GITHUB_REPOSITORY}.\n\n`;
+			message += `Workflow Name: ${context.workflow}\n`;
+			message += `Cron: ${context.payload.schedule}`;
+
+			if (simpleMessage) {
+				return [null, message];
+			}
+
 			action_buttons = [{
 					action: "view",
 					label: "Visit Repository",
@@ -85,10 +127,18 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 					clear: true,
 				},
 			];
-			message = `Scheduled task "${context.job}" ran in ${process.env.GITHUB_REPOSITORY}.\n\n` + `Workflow Name: ${context.workflow}\n` + `Cron: ${context.payload.schedule}`;
 			return [action_buttons, message];
 
 		default:
+			message = `Workflow "${context.workflow}" ran in ${payload.repository.full_name}\n\n`;
+			message += `Repository: ${payload.repository.full_name}\n`;
+			message += `Workflow Job Name: ${context.job}\n`;
+			message += `Event Name: ${context.eventName}`;
+
+			if (simpleMessage) {
+				return [null, message];
+			}
+
 			action_buttons = [{
 					action: "view",
 					label: "Visit Repo",
@@ -102,7 +152,6 @@ async function getMessageData(isGithub, isGitea, isDebug) {
 					clear: true,
 				},
 			];
-			message = `Workflow "${context.workflow}" ran in ${payload.repository.full_name}\n\n` + `Repository: ${payload.repository.full_name}\n` + `Workflow Job Name: ${context.job}\n` + `Event Name: ${context.eventName}`;
 			return [action_buttons, message];
 	}
 }
@@ -132,6 +181,7 @@ function getIntInput(key, def) {
 function getInputs() {
 	return {
 		debug: getBoolInput("debug"),
+		simple_message: getBoolInput("simple_message"),
 		server_type: getStringInput("server_type", "github"),
 		url: getStringInput("url", ""),
 		basic_auth: getStringInput("basic_auth", ""),
@@ -164,6 +214,7 @@ async function run() {
 			core.info(`  Title: ${inputs.title}`);
 			core.info(`  Details: ${inputs.details}`);
 			core.info(`  Priority: ${inputs.priority}`);
+			core.info(`  Simple Message: ${inputs.simple_message}`);
 			core.info("");
 		}
 
@@ -171,10 +222,10 @@ async function run() {
 		let isGitea = inputs.server_type === "gitea";
 
 		core.info(`Creating GIT Information ...`);
-		let message = await getMessageData(isGithub, isGitea, inputs.debug);
+		let message = await getMessageData(isGithub, isGitea, inputs.debug, inputs.simple_message);
 
 		inputs.messageText = `${message[1]} \n\n ${inputs.details}`;
-		inputs.actions = message[0];
+		if (message[0] != null) inputs.actions = message[0];
 	} catch (error) {
 		core.error("Failed getting action inputs");
 		if (error.response && error.response.data) core.error(JSON.stringify(request, null, 4));
@@ -191,17 +242,21 @@ async function run() {
 		if (inputs.token_auth) headers["Authorization"] = `Bearer ${inputs.token_auth}`;
 		else if (inputs.basic_auth) headers["Authorization"] = `Basic ${inputs.basic_auth}`;
 
+		let request_data = {
+			topic: inputs.topic,
+			message: inputs.messageText,
+			title: inputs.title,
+			tags: inputs.tags,
+			priority: inputs.priority,
+		};
+		if (inputs.actions) {
+			request_data.actions = inputs.actions;
+		}
+
 		let request = {
 			method: "POST",
 			headers: headers,
-			data: JSON.stringify({
-				topic: inputs.topic,
-				message: inputs.messageText,
-				title: inputs.title,
-				tags: inputs.tags,
-				priority: inputs.priority,
-				actions: inputs.actions,
-			}),
+			data: JSON.stringify(request_data),
 		};
 
 		if (inputs.debug) {
