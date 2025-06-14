@@ -2,7 +2,7 @@
 
 Version of [https://github.com/NiNiyas/ntfy-action](https://github.com/NiNiyas/ntfy-action) that fixes some issues
 
-Send GitHub action notifications to [ntfy.sh](https://ntfy.sh).
+Send GitHub/Gitea action notifications to [ntfy.sh](https://ntfy.sh) or custom url.
 
 This is currently only available for `push`, `release`, `schedule`, `workflow`, `repository_dispatch` and `workflow_dispatch` events.
 
@@ -49,6 +49,10 @@ debug:
   description: "Prints debug information for dev/troubleshooting."
   required: false
   default: false
+simple_message:
+  description: "Reduces the message size in the notification and removes any action buttons."
+  required: false
+  default: false
 ```
 
 **Note**: If you are using CloudFlare infront of your ntfy server, you should turn off `Bot Fight Mode` in `Security->Bots`. Otherwise you probably will get 503 status.
@@ -57,7 +61,7 @@ debug:
 
 ```yaml
 - name: ntfy-notifications
-  uses: niniyas/ntfy-action@master
+  uses: floppyman/ntfy_action@main
   with:
     url: 'https://ntfy.sh' or ${{ secrets.NTFY_URL }}
     topic: 'test' or ${{ secrets.NTFY_TOPIC }}
@@ -67,7 +71,7 @@ debug:
 
 ```yaml
 - name: ntfy-notifications
-  uses: niniyas/ntfy-action@master
+  uses: floppyman/ntfy_action@main
   with:
     url: 'https://ntfy.sh' or ${{ secrets.NTFY_URL }}
     topic: 'test' or ${{ secrets.NTFY_TOPIC }}
@@ -80,7 +84,7 @@ debug:
 
 ```yaml
 - name: ntfy-success-notifications
-  uses: niniyas/ntfy-action@master
+  uses: floppyman/ntfy_action@main
   if: success()
   with:
     url: 'https://ntfy.sh' or ${{ secrets.NTFY_URL }}
@@ -95,7 +99,7 @@ debug:
 
 ```yaml
 - name: ntfy-failed-notifications
-  uses: niniyas/ntfy-action@master
+  uses: floppyman/ntfy_action@main
   if: failure()
   with:
     url: 'https://ntfy.sh' or ${{ secrets.NTFY_URL }}
@@ -110,7 +114,7 @@ debug:
 
 ```yaml
 - name: ntfy-cancelled-notifications
-  uses: niniyas/ntfy-action@master
+  uses: floppyman/ntfy_action@main
   if: cancelled()
   with:
     url: 'https://ntfy.sh' or ${{ secrets.NTFY_URL }}

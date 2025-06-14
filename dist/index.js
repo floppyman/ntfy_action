@@ -41450,6 +41450,7 @@ async function run() {
 		if (inputs.debug) {
 			core.info("");
 			core.info("INPUT VALUES:");
+			core.info(`  Server Type: ${inputs.server_type}`);
 			core.info(`  URL: ${inputs.url}`);
 			core.info(`  BasicAuth: ${inputs.basic_auth}`);
 			core.info(`  TokenAuth: ${inputs.token_auth}`);

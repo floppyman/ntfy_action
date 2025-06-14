@@ -1,8 +1,11 @@
 name: ntfy_action
+
 description: Send GitHub Action workflow notifications to ntfy.
+
 branding:
-  icon: "upload"
-  color: "blue"
+  icon: "send"
+  color: "green"
+
 inputs:
   url:
     description: "Server URL."
@@ -35,7 +38,7 @@ inputs:
   priority:
     description: "Message priority."
     required: false
-    default: 0
+    default: "0"
   server_type:
     description: "Type of server the actions is used on, values: github or gitea."
     required: false
@@ -43,10 +46,16 @@ inputs:
   debug:
     description: "Prints debug information for dev/troubleshooting."
     required: false
-    default: false
+    default: "false"
+  simple_message:
+    description: "Reduces the message size in the notification and removes any action buttons."
+    required: false
+    default: "false"
+
 outputs:
   response:
     description: "The response of POST request."
+
 runs:
   using: "node20"
   main: "dist/index.js"
